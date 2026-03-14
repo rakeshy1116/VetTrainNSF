@@ -65,7 +65,12 @@ function App() {
      const conclusionQuestions = allQuestions.filter(question => question.category === 'Conclusion');
      const otherQuestions = allQuestions.filter(question => question.category !== 'Introduction' && question.category !== 'Conclusion');
    
-    const shuffledQuestions = otherQuestions.sort(() => 0.5 - Math.random());
+    // Fisher-Yates shuffle for unbiased randomization
+    const shuffledQuestions = [...otherQuestions];
+    for (let i = shuffledQuestions.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffledQuestions[i], shuffledQuestions[j]] = [shuffledQuestions[j], shuffledQuestions[i]];
+    }
     const selectedQuestions = shuffledQuestions.slice(0, 6);
     
     const newQuestionsOrder = [...introQuestions, ...selectedQuestions, ...conclusionQuestions];
@@ -153,24 +158,41 @@ function App() {
   }, [currentQuestionIndex, currentQuestions]);
 
   
-  // Submit the answer to the API and update the state with the API response
+  // Submit the answer to the Flask backend for ML evaluation
   const handleSubmit = async () => {
-    console.log(`Submitting answer for question ${currentQuestion.id}: ${currentQuestion.answer}`);
-    const response = await new Promise(resolve => setTimeout(() => resolve({
-      Label: 'Succinct',
-      Reasoning: 'The veteran\'s response is to the point and concise, fully answering the interviewer\'s questions. The veteran\'s use of polite expressions like "I appreciate you taking the time" and "really appreciate it" indicates respectful and polite language, while their cautious language (e.g., "I\'m trying to continue that," "I think what I\'m now looking for") contributes to a well-rounded and clear explanation. The veteran also avoids political content.'
-    }), 5000));
+    const answer = currentQuestion?.answer || textAreaValue;
+    if (!answer.trim()) {
+      alert('Please provide an answer before submitting.');
+      return;
+    }
 
-    // Update the state with the API response
-    setApiResponse(response);
-    const updatedQuestions = allQuestions.map(question => {
-      if (question.id === currentQuestionIndex) { // Assuming currentQuestionId is the ID of the question being answered
-        return { ...question, Label: apiResponse.Label, Reasoning: apiResponse.Reasoning };
+    const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:5000';
+    try {
+      const res = await fetch(backendUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ answer }),
+      });
+
+      if (!res.ok) {
+        throw new Error(`Server responded with status ${res.status}`);
       }
-      return question;
-    });
-  
-    setAllQuestions(updatedQuestions);
+
+      const data = await res.json();
+      const response = { Label: data.Label || data, Reasoning: data.Reasoning || '' };
+
+      setApiResponse(response);
+      const updatedQuestions = currentQuestions.map((question, index) => {
+        if (index === currentQuestionIndex) {
+          return { ...question, Label: response.Label, Reasoning: response.Reasoning };
+        }
+        return question;
+      });
+      setCurrentQuestions(updatedQuestions);
+    } catch (err) {
+      console.error('Submission error:', err);
+      setApiResponse({ Label: 'Error', Reasoning: `Could not reach the evaluation server: ${err.message}` });
+    }
   };
 
   // Reset the answer in the text area

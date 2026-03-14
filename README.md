@@ -1,70 +1,137 @@
 # VetTrain NSF
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A web-based interview preparation application for veterans, built with React and Python Flask. It guides users through structured mock interviews with AI-powered answer evaluation.
+
+## Features
+
+- 19 pre-defined interview questions across 8 categories
+- Randomized question selection per session (Introduction + 6 random + Conclusion)
+- Real-time speech-to-text using OpenAI Whisper API
+- ML-based answer evaluation via a Flask backend
+- Per-question answer persistence during a session
+- Start Over and Reset Answer functionality
+
+## Project Structure
+
+```
+VetTrainNSF/
+├── src/                        # React frontend
+│   ├── App.js                  # Main interview component
+│   ├── App.css                 # Application styles
+│   ├── AudioRecord.js          # Alternative audio recording component
+│   ├── AudioUpload.js          # Audio file upload component
+│   ├── hooks/
+│   │   └── useSpeechToText/    # Custom Web Speech API hook
+│   └── ...
+├── flask_backend.py            # Flask API server
+├── model.py                    # ML model loader and predictor
+├── api_dev_model_binary_text.pkl  # Pre-trained binary classification model
+├── public/                     # Static assets
+└── requirements.txt            # Python dependencies
+```
+
+## Prerequisites
+
+- Node.js >= 16
+- Python >= 3.8
+- An OpenAI API key (for Whisper speech-to-text)
+- A browser with Web Speech API support (Chrome recommended)
+
+## Setup
+
+### Frontend
+
+```bash
+npm install
+```
+
+Create a `.env` file in the project root (see `.env.example`):
+
+```bash
+cp .env.example .env
+# Edit .env and add your OpenAI API key
+```
+
+Start the development server:
+
+```bash
+npm start
+```
+
+Open [http://localhost:3000](http://localhost:3000) in your browser.
+
+### Backend
+
+Install Python dependencies:
+
+```bash
+pip install -r requirements.txt
+```
+
+Start the Flask server:
+
+```bash
+python flask_backend.py
+```
+
+The API runs on [http://localhost:5000](http://localhost:5000).
+
+## Environment Variables
+
+| Variable | Description | Required |
+|---|---|---|
+| `REACT_APP_OPENAI_API_KEY` | OpenAI API key for Whisper transcription | Yes |
+| `REACT_APP_BACKEND_URL` | Flask backend URL (default: `http://localhost:5000`) | No |
+
+See `.env.example` for a template.
+
+## Interview Question Categories
+
+| Category | Questions |
+|---|---|
+| Introduction | 1 |
+| Mental Capability | 2 |
+| Knowledge and Skills | 3 |
+| Leadership | 2 |
+| Communication and Interpersonal Skills | 3 |
+| Basic Personality Tendencies | 2 |
+| Persuasion and Negotiation | 2 |
+| Interests and Preferences | 2 |
+| Why | 1 |
+| Conclusion | 1 |
+
+Each session presents: the Introduction question, 6 randomly selected questions from the middle categories, and the Conclusion question.
+
+## API Endpoints
+
+| Method | Endpoint | Description |
+|---|---|---|
+| `GET` | `/health` | Health check |
+| `POST` | `/` | Submit answer for evaluation. Body: `{"answer": "..."}` |
+
+The POST endpoint returns a JSON object with `Label` and `Reasoning` fields from the ML model.
 
 ## Available Scripts
 
-In the project directory, you can run:
+| Command | Description |
+|---|---|
+| `npm start` | Run the app in development mode |
+| `npm test` | Run tests in interactive watch mode |
+| `npm run build` | Build the app for production |
 
-### `npm start`
+## Known Limitations
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+- Browser must support the Web Speech API (Chrome recommended)
+- The ML model evaluates answer quality as a binary classification (succinct vs. verbose)
+- No persistent storage — answers are lost on page refresh
+- CORS is currently open to all origins; restrict in production
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## Contributing
 
-### `npm test`
+1. Create a feature branch from `master`
+2. Make your changes
+3. Submit a pull request with a clear description of the improvement
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## License
 
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+This project is part of the NSF VetTrain research initiative.
