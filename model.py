@@ -1,22 +1,16 @@
+import os
 import joblib
 import pandas as pd
 
+MODEL_PATH = os.path.join(os.path.dirname(__file__), 'api_dev_model_binary_text.pkl')
+
+
 def load_model(input_data):
-    model_path = './'
-#     new_data = pd.DataFrame({
-#     'answer_transcript': 
-#             ["Sample text 1 is the shortest. Colorado's seasons vary widely: cold, snowy winters; mild, sometimes snowy springs; warm, dry summers; and crisp, colorful autumns. Each season offers unique weather and stunning landscapes.",
-#              "Sample text 2 is not as short. Colorado experiences distinct seasons, each offering unique weather patterns. Winters are cold with significant snowfall, especially in the mountainous regions, making it a haven for winter sports enthusiasts. Spring brings milder temperatures and blooming flora, though it can still be unpredictable with occasional snowstorms. Summers are warm and dry, with plenty of sunshine, ideal for outdoor activities. Autumn features crisp air and vibrant fall foliage, creating picturesque landscapes across the state.", 
-#              "Sample text 3 is longer. Colorado's seasons provide a diverse array of weather conditions, each contributing to the state's unique charm. Winter in Colorado is characterized by cold temperatures and substantial snowfall, particularly in the high-altitude regions, attracting skiers and snowboarders from around the world. The snow-covered landscapes transform the state into a winter wonderland, with temperatures often dropping below freezing. As spring arrives, temperatures begin to moderate, and the state experiences a mix of sunny days and late-season snowstorms. This transitional period is marked by the budding of trees and flowers, adding bursts of color to the scenery. Summer in Colorado is generally warm and dry, with daytime temperatures often reaching the 80s and 90s (Fahrenheit). The low humidity and ample sunshine make it perfect for hiking, biking, and exploring the great outdoors. Finally, autumn brings cooler temperatures and stunning fall foliage, as the aspen trees turn brilliant shades of yellow and orange. This season offers a crisp, refreshing climate, making it a favorite time for both residents and visitors to enjoy the state's natural beauty. Each season in Colorado presents its own unique weather patterns, ensuring a constantly changing yet consistently captivating environment.", 
-#              "Sample text 4 is the longest. Colorado is a state defined by its distinct and diverse seasons, each bringing a unique set of weather conditions that contribute to its captivating environment. Winters in Colorado are renowned for their cold temperatures and heavy snowfall, especially in the mountainous regions that attract winter sports enthusiasts. The ski resorts thrive during this time, as the snow-covered peaks offer some of the best skiing and snowboarding opportunities in the country. The lower elevations, including cities like Denver, also experience significant snowfall, although they can have more variable winter weather with occasional sunny days. As the state transitions into spring, the weather becomes more temperate, though it can be highly unpredictable. Springtime often sees a mix of warm, sunny days and late-season snowstorms, which can create a beautiful juxtaposition of blooming flowers and snowy landscapes. This period of renewal is marked by the gradual warming of temperatures and the return of vibrant greenery. Summer in Colorado is characterized by warm, dry weather, with plenty of sunshine and low humidity. Daytime temperatures can climb into the 80s and 90s (Fahrenheit), but the evenings typically cool off, providing a pleasant respite. This season is ideal for outdoor activities such as hiking, biking, and camping, with the state's numerous national parks and natural reserves offering endless opportunities for exploration. The high elevation means that even on the hottest days, the temperatures are generally more bearable than in lower-lying regions. As summer fades into autumn, Colorado undergoes one of its most visually stunning transformations. The air becomes crisp, and the aspen trees turn vibrant shades of yellow and orange, creating breathtaking scenery across the state. Fall is a popular time for scenic drives and hikes, as people flock to witness the spectacular foliage. The weather during this time is generally cool and comfortable, making it a favorite season for many. Throughout the year, Colorado's weather can be influenced by its varied topography, with the Rocky Mountains playing a significant role in shaping local climate patterns. This geographical diversity ensures that each season is distinct and brings its own set of experiences, from snowy adventures in winter to colorful hikes in autumn. The ever-changing weather and natural beauty make Colorado a state that offers something special in every season, appealing to residents and visitors alike."],
-# })
-    new_data = pd.DataFrame({
-    'answer_transcript': 
-            [input_data],
-    })
-    loaded_model = joblib.load(model_path + 'api_dev_model_binary_text.pkl')
+    """Load the pre-trained model and return predictions for the given answer text."""
+    if not os.path.exists(MODEL_PATH):
+        raise FileNotFoundError(f'Model file not found: {MODEL_PATH}')
+
+    new_data = pd.DataFrame({'answer_transcript': [input_data]})
+    loaded_model = joblib.load(MODEL_PATH)
     predictions = loaded_model.predict(new_data)
-    print(predictions)
     return predictions
-
-
