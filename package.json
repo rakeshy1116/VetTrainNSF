@@ -2,6 +2,19 @@
   "name": "my-app",
   "version": "0.1.0",
   "private": true,
+  "overrides": {
+    "serialize-javascript": "7.0.7",
+    "postcss": "8.5.20",
+    "nth-check": "3.0.1",
+    "css-select": "7.0.0",
+    "http-proxy-agent": "9.1.0",
+    "bfj": "9.1.3",
+    "underscore": "1.13.8",
+    "uuid": "14.0.1",
+    "yaml": "2.9.0",
+    "brace-expansion": "2.1.2",
+    "webpack-dev-server": "6.0.0"
+  },
   "dependencies": {
     "@chengsokdara/use-whisper": "^0.2.0",
     "@ffmpeg/core": "^0.11.0",
